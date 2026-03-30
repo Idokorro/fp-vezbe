@@ -1,4 +1,3 @@
-import GHC.IO.Device (IODevice(close))
 {-  Functor
 
     Type class
@@ -22,7 +21,7 @@ import GHC.IO.Device (IODevice(close))
 
 -}
 
-import System.IO
+-- primer Functor
 
 data Osoba a = Osoba a | Niko deriving (Show)
 
@@ -30,17 +29,14 @@ instance Functor Osoba where
     fmap f (Osoba x) = Osoba (f x)
     fmap f Niko = Niko
 
-data Maybe' a = Just' a | Nothing' deriving (Show)
+zbir3 :: (Num a) => a -> a
+zbir3 x = x + 3
 
-instance Functor Maybe' where
-    fmap f (Just' x) = Just' (f x)
-    fmap f Nothing' = Nothing'
-
-data Either' a b = Left' a | Right' b deriving (Show)
+data Either' a b = Left' a | Right' b
 
 instance Functor (Either' a) where
+    fmap f (Right' x) = Right' (f x)
     fmap f (Left' x) = Left' x
-    fmap f (Right' y) = Right' (f y)
 
 {-  Main
 
@@ -86,15 +82,47 @@ instance Functor (Either' a) where
 
 -}
 
--- main = interact kratke
+{-  primer main
 
--- velika :: String -> String
--- velika xs = [ x | x <- xs, elem x ['A'..'Z'] ]
+    main = putStrLn "Hello :)"
 
--- kratke :: String -> String
--- kratke input = let all = lines input
---                    short = filter (\line -> length line < 10) all
---                in unlines short
+    main = do putStrLn "Neki tekst?"
+              text <- getLine
+              let slova = filter (`elem` ['A'..'Z']) text
+              putStrLn $ "Velika slova: " ++ slova
+
+    import Data.Char
+
+    main = do putStrLn "Neki broj?"
+              line <- getLine
+              if null line
+                then return ()
+                else do let rez = zbir3 (read line :: Int)
+                        putStrLn $ "Rezultat: " ++ show rez
+                        main
+
+    main = do a <- return "neko"  
+              b <- return "nesto"
+              putStrLn $ a ++ " " ++ b
+
+    main = do tekst <- getContents  -- interact kratke
+              putStr (kratke tekst)
+      
+    kratke :: String -> String
+    kratke input = let all = lines input
+                       short = filter (\line -> length line < 10) all
+                       result = unlines short
+                   in  map toUpper result
+
+    import System.Environment
+    import Data.List
+
+    main = do args <- getArgs
+              progName <- getProgName
+              mapM putStrLn args
+              putStrLn progName
+
+-}
 
 {- Rad sa fajlovima
 
@@ -121,8 +149,22 @@ instance Functor (Either' a) where
 
 -}
 
-main = do cnt <- readFile "src/vezbe5.hs" 
-          writeFile "output.txt" cnt
+{-  primer File
+
+    import System.IO
+
+    main = do handle <- openFile "vezbe6.hs" ReadMode
+              contents <- hGetContents handle
+              putStr . unlines. take 5 . lines $ contents
+              hClose handle
+
+    main = do withFile "vezbe6.hs" ReadMode (\handle -> do contents <- hGetContents handle
+                                                           putStr . unlines. take 5 . lines $ contents)
+
+    main = do contents <- readFile "vezbe6.hs"
+              writeFile "tmp.txt" (unlines . take 5 . lines $ contents)
+
+-}
 
 {-  Domaci (BODUJE SE!!! BONUS POENI!!!)
 
